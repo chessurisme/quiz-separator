@@ -160,9 +160,12 @@ async function importFile(file) {
   try { text = await file.text(); }
   catch (_) { toast(`Cannot read "${file.name}"`, 'error'); return; }
 
-  let quiz;
-  try { quiz = JSON.parse(text); }
+  let raw;
+  try { raw = JSON.parse(text); }
   catch (_) { toast(`Invalid JSON in "${file.name}"`, 'error'); return; }
+
+  // Support old format: a plain array of questions
+  const quiz = Array.isArray(raw) ? { questions: raw } : raw;
 
   if (!Array.isArray(quiz.questions) || quiz.questions.length === 0) {
     toast(`"${file.name}" has no questions array`, 'error');
